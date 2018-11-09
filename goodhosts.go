@@ -101,6 +101,7 @@ func (h Hosts) Flush() error {
 	if err != nil {
 		return err
 	}
+	defer file.Close()
 
 	w := bufio.NewWriter(file)
 

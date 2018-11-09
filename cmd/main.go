@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/docopt/docopt-go"
-	"github.com/lextoumbourou/goodhosts"
 	"os"
+
+	"github.com/docopt/docopt-go"
+	"github.com/lobre/goodhosts"
 )
 
 func check(err error) {
