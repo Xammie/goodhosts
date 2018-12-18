@@ -96,7 +96,7 @@ func (h *Hosts) Load() error {
 }
 
 // Flush any changes made to hosts file.
-func (h Hosts) Flush() error {
+func (h Hosts) Flush(forceCrlf bool) error {
 	file, err := os.Create(h.Path)
 	if err != nil {
 		return err
@@ -105,8 +105,14 @@ func (h Hosts) Flush() error {
 
 	w := bufio.NewWriter(file)
 
+	// Check eol
+	newLine := eol
+	if forceCrlf {
+		newLine = "\r\n"
+	}
+
 	for _, line := range h.Lines {
-		fmt.Fprintf(w, "%s%s", line.Raw, eol)
+		fmt.Fprintf(w, "%s%s", line.Raw, newLine)
 	}
 
 	err = w.Flush()
@@ -156,14 +162,14 @@ func (h Hosts) Has(ip string, host string) bool {
 func (h *Hosts) Remove(ip string, hosts ...string) error {
 	var outputLines []HostsLine
 
-	if net.ParseIP(ip) == nil {
+	if ip != "" && net.ParseIP(ip) == nil {
 		return errors.New(fmt.Sprintf("%q is an invalid IP address.", ip))
 	}
 
 	for _, line := range h.Lines {
 
 		// Bad lines or comments just get readded.
-		if line.Err != nil || line.IsComment() || line.IP != ip {
+		if line.Err != nil || line.IsComment() || (ip != "" && line.IP != ip) {
 			outputLines = append(outputLines, line)
 			continue
 		}
@@ -195,7 +201,7 @@ func (h Hosts) getHostPosition(ip string, host string) int {
 	for i := range h.Lines {
 		line := h.Lines[i]
 		if !line.IsComment() && line.Raw != "" {
-			if ip == line.IP && itemInSlice(host, line.Hosts) {
+			if (ip != "" && ip == line.IP) && itemInSlice(host, line.Hosts) {
 				return i
 			}
 		}
