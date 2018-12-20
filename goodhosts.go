@@ -225,18 +225,17 @@ func (h Hosts) getIpPosition(ip string) int {
 	return -1
 }
 
+// Force Windows style no matter the current os
+// This can be handy if a Windows hosts file is mounted into a docker container for instance
+func (h *Hosts) ForceWindowsStyle() {
+	h.EOL = "\r\n"
+	h.Single = true
+}
+
 // Return a new instance of ``Hosts``.
 func NewHosts() (Hosts, error) {
-	path := ""
-
-	if os.Getenv("HOSTS_PATH") == "" {
-		path = os.ExpandEnv(filepath.FromSlash(defaultPath))
-	} else {
-		path = os.Getenv("HOSTS_PATH")
-	}
-
 	hosts := Hosts{
-		Path:   path,
+		Path:   os.ExpandEnv(filepath.FromSlash(defaultPath)),
 		EOL:    defaultEOL,
 		Single: defaultSingle,
 	}
@@ -249,20 +248,12 @@ func NewHosts() (Hosts, error) {
 	return hosts, nil
 }
 
-// Return a new instance of ``Hosts`` for Windows.
-func NewHostsWithConf(path string, EOL string, single bool) (Hosts, error) {
-	if path == "" {
-		path = os.ExpandEnv(filepath.FromSlash(defaultPath))
-	}
-
-	if EOL == "" {
-		EOL = defaultEOL
-	}
-
+// Return a new instance of ``Hosts`` with custom Path.
+func NewHostsPath(path string) (Hosts, error) {
 	hosts := Hosts{
 		Path:   path,
-		EOL:    EOL,
-		Single: single,
+		EOL:    defaultEOL,
+		Single: defaultSingle,
 	}
 
 	err := hosts.Load()
