@@ -250,6 +250,10 @@ func NewHosts() (Hosts, error) {
 
 // Return a new instance of ``Hosts`` with custom Path.
 func NewHostsPath(path string) (Hosts, error) {
+	if path == "" {
+		return NewHosts()
+	}
+
 	hosts := Hosts{
 		Path:   path,
 		EOL:    defaultEOL,
