@@ -1,5 +1,5 @@
 package goodhosts
 
-const hostsFilePath = "${SystemRoot}/System32/drivers/etc/hosts"
-const eol = "\r\n"
-const single = true
+const defaultPath = "${SystemRoot}/System32/drivers/etc/hosts"
+const defaultEOL = "\r\n"
+const defaultSingle = true

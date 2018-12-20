@@ -2,6 +2,6 @@
 
 package goodhosts
 
-const hostsFilePath = "/etc/hosts"
-const eol = "\n"
-const single = false
+const defaultPath = "/etc/hosts"
+const defaultEOL = "\n"
+const defaultSingle = false

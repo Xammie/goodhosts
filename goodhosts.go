@@ -227,18 +227,18 @@ func (h Hosts) getIpPosition(ip string) int {
 
 // Return a new instance of ``Hosts``.
 func NewHosts() (Hosts, error) {
-	osHostsFilePath := ""
+	path := ""
 
 	if os.Getenv("HOSTS_PATH") == "" {
-		osHostsFilePath = os.ExpandEnv(filepath.FromSlash(hostsFilePath))
+		path = os.ExpandEnv(filepath.FromSlash(defaultPath))
 	} else {
-		osHostsFilePath = os.Getenv("HOSTS_PATH")
+		path = os.Getenv("HOSTS_PATH")
 	}
 
 	hosts := Hosts{
-		Path:   osHostsFilePath,
-		EOL:    eol,
-		Single: single,
+		Path:   path,
+		EOL:    defaultEOL,
+		Single: defaultSingle,
 	}
 
 	err := hosts.Load()
@@ -250,10 +250,18 @@ func NewHosts() (Hosts, error) {
 }
 
 // Return a new instance of ``Hosts`` for Windows.
-func NewHostsWithConf(path string, eol string, single bool) (Hosts, error) {
+func NewHostsWithConf(path string, EOL string, single bool) (Hosts, error) {
+	if path == "" {
+		path = os.ExpandEnv(filepath.FromSlash(defaultPath))
+	}
+
+	if EOL == "" {
+		EOL = defaultEOL
+	}
+
 	hosts := Hosts{
 		Path:   path,
-		EOL:    eol,
+		EOL:    EOL,
 		Single: single,
 	}
 
