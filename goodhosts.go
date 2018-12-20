@@ -50,8 +50,10 @@ func NewHostsLine(raw string) HostsLine {
 
 // Represents a hosts file.
 type Hosts struct {
-	Path  string
-	Lines []HostsLine
+	Path   string
+	Lines  []HostsLine
+	EOL    string
+	Single bool
 }
 
 // Return ```true``` if hosts file is writable.
@@ -96,7 +98,7 @@ func (h *Hosts) Load() error {
 }
 
 // Flush any changes made to hosts file.
-func (h Hosts) Flush(forceCrlf bool) error {
+func (h Hosts) Flush() error {
 	file, err := os.Create(h.Path)
 	if err != nil {
 		return err
@@ -105,14 +107,14 @@ func (h Hosts) Flush(forceCrlf bool) error {
 
 	w := bufio.NewWriter(file)
 
-	// Check eol
-	newLine := eol
-	if forceCrlf {
-		newLine = "\r\n"
-	}
-
 	for _, line := range h.Lines {
-		fmt.Fprintf(w, "%s%s", line.Raw, newLine)
+		if h.Single {
+			for _, host := range line.Hosts {
+				fmt.Fprintf(w, "%s%s%s", line.IP, host, h.EOL)
+			}
+		} else {
+			fmt.Fprintf(w, "%s%s", line.Raw, h.EOL)
+		}
 	}
 
 	err = w.Flush()
@@ -233,7 +235,27 @@ func NewHosts() (Hosts, error) {
 		osHostsFilePath = os.Getenv("HOSTS_PATH")
 	}
 
-	hosts := Hosts{Path: osHostsFilePath}
+	hosts := Hosts{
+		Path:   osHostsFilePath,
+		EOL:    eol,
+		Single: single,
+	}
+
+	err := hosts.Load()
+	if err != nil {
+		return hosts, err
+	}
+
+	return hosts, nil
+}
+
+// Return a new instance of ``Hosts`` for Windows.
+func NewHostsWithConf(path string, eol string, single bool) (Hosts, error) {
+	hosts := Hosts{
+		Path:   path,
+		EOL:    eol,
+		Single: single,
+	}
 
 	err := hosts.Load()
 	if err != nil {

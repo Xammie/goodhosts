@@ -93,7 +93,7 @@ Options:
 			os.Exit(2)
 		}
 
-		err = hosts.Flush(false)
+		err = hosts.Flush()
 		check(err)
 
 		return
@@ -114,7 +114,7 @@ Options:
 			os.Exit(2)
 		}
 
-		err = hosts.Flush(false)
+		err = hosts.Flush()
 		check(err)
 
 		return
