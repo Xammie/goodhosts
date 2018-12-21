@@ -108,9 +108,9 @@ func (h Hosts) Flush() error {
 	w := bufio.NewWriter(file)
 
 	for _, line := range h.Lines {
-		if h.Single {
+		if h.Single && line.IP != "" {
 			for _, host := range line.Hosts {
-				fmt.Fprintf(w, "%s%s%s", line.IP, host, h.EOL)
+				fmt.Fprintf(w, "%s %s%s", line.IP, host, h.EOL)
 			}
 		} else {
 			fmt.Fprintf(w, "%s%s", line.Raw, h.EOL)
