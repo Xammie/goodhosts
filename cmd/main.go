@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/Xammie/goodhosts"
 	"github.com/docopt/docopt-go"
-	"github.com/lobre/goodhosts"
 )
 
 func check(err error) {
